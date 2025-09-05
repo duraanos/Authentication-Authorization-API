@@ -1,6 +1,5 @@
 import { supabase } from '../config/supabaseClient.js';
 import { hashPassword, comparePassword } from '../utils/jwt.js';
-import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {
@@ -73,13 +72,8 @@ export const login = async (req, res) => {
       return res.status(400).json({ error: supabaseError.message });
     }
 
-    const accessToken = jwt.sign(
-      { email: loginData.user.email, id: loginData.user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    const refreshToken = loginData.session.refresh_token;
+    const accessToken = loginData.session?.access_token;
+    const refreshToken = loginData.session?.refresh_token;
 
     return res.status(200).json({
       message: 'Login successful',
@@ -102,6 +96,16 @@ export const logout = async (req, res) => {
     if (error) return res.status(400).json({ error: error.message });
 
     res.status(200).json({ message: 'Logged out successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const currentUser = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .json({ message: 'Current user fetched successfully', user: req.user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
