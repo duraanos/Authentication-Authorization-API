@@ -164,3 +164,27 @@ export const forgotPassword = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { access_token, newPassword } = req.body;
+
+    const { error: sessionError } = await supabase.auth.setSession({
+      access_token,
+      refresh_token: '',
+    });
+
+    if (sessionError)
+      return res.status(400).json({ error: sessionError.error });
+
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ message: 'Password reset successfuly', user: data.user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
