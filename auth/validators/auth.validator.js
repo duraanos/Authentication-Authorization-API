@@ -4,6 +4,7 @@ export const registerSchema = Joi.object({
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .trim()
+    .lowercase()
     .required()
     .messages({
       'string.empty': 'Email is required',
