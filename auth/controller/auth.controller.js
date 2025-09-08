@@ -146,3 +146,21 @@ export const refreshToken = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:3000/reset-password',
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ message: 'Password reset email sent', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
