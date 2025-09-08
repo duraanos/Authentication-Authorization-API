@@ -8,12 +8,15 @@ export const register = async (req, res) => {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name,
+          role: 'admin',
+        },
+      },
     });
 
-    if (authError) {
-      console.error('Supabase Error', authError);
-      return res.status(400).json({ error: authError.message });
-    }
+    if (authError) return res.status(400).json({ error: authError.message });
 
     const { data: existingUser } = await supabase
       .from('users')
@@ -34,9 +37,13 @@ export const register = async (req, res) => {
 
     if (error) throw error;
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'User registered successfully',
-      user: { id: authData.user.id, email: authData.user.email },
+      user: {
+        id: authData.user.id,
+        email: authData.user.email,
+        role: 'admin',
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -95,7 +102,7 @@ export const logout = async (req, res) => {
 
     if (error) return res.status(400).json({ error: error.message });
 
-    res.status(200).json({ message: 'Logged out successfully' });
+    return res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -103,9 +110,38 @@ export const logout = async (req, res) => {
 
 export const currentUser = async (req, res) => {
   try {
-    res
+    return res
       .status(200)
       .json({ message: 'Current user fetched successfully', user: req.user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const { refresh_token } = req.body;
+
+    if (!refresh_token)
+      return res.status(400).json({ error: 'Refresh token is required' });
+
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refresh_token,
+    });
+
+    if (error) {
+      return res.status(401).json({ error: error.message });
+    }
+
+    const newAccessToken = data.session?.access_token;
+    const newRefreshToken = data.session?.refresh_token;
+
+    return res.status(200).json({
+      message: 'Token refreshed successfully',
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      user: data.user,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
