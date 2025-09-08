@@ -4,6 +4,7 @@ import {
   login,
   logout,
   currentUser,
+  refreshToken,
 } from '../controller/auth.controller.js';
 import {
   validateRegister,
@@ -17,5 +18,6 @@ router.post('/register', validateRegister, register);
 router.post('/login', validateLogin, login);
 router.post('/logout', logout);
 router.get('/current', verifySupabaseToken, currentUser);
+router.post('/refresh', refreshToken);
 
 export default router;
