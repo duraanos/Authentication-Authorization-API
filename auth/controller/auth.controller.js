@@ -11,7 +11,7 @@ export const register = async (req, res) => {
       options: {
         data: {
           name,
-          role: 'admin',
+          role: 'user',
         },
       },
     });
@@ -42,17 +42,17 @@ export const register = async (req, res) => {
       user: {
         id: authData.user.id,
         email: authData.user.email,
-        role: 'admin',
+        role: 'user',
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
 export const login = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password } = req.body;
 
     const { data: user, error } = await supabase
       .from('users')
@@ -75,7 +75,6 @@ export const login = async (req, res) => {
       });
 
     if (supabaseError) {
-      console.log(supabaseError);
       return res.status(400).json({ error: supabaseError.message });
     }
 
@@ -92,7 +91,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -104,7 +103,7 @@ export const logout = async (req, res) => {
 
     return res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -114,7 +113,7 @@ export const currentUser = async (req, res) => {
       .status(200)
       .json({ message: 'Current user fetched successfully', user: req.user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -143,7 +142,7 @@ export const refreshToken = async (req, res) => {
       user: data.user,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -161,7 +160,7 @@ export const forgotPassword = async (req, res) => {
 
     return res.json({ message: 'Password reset email sent', data });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -185,6 +184,6 @@ export const resetPassword = async (req, res) => {
 
     return res.json({ message: 'Password reset successfuly', user: data.user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };

@@ -9,20 +9,21 @@ import {
   resetPassword,
 } from '../controller/auth.controller.js';
 import {
-  validateRegister,
-  validateLogin,
-  validateResetPassword,
+  registerSchema,
+  loginSchema,
+  resetPasswordSchema,
+  validate,
 } from '../validators/auth.validator.js';
-import { verifySupabaseToken } from '../middlewares/authenticationToken.js';
+import { verifyAccessToken } from '../middlewares/authenticationToken.js';
 
 const router = express.Router();
 
-router.post('/register', validateRegister, register);
-router.post('/login', validateLogin, login);
+router.post('/register', validate(registerSchema), register);
+router.post('/login', validate(loginSchema), login);
 router.post('/logout', logout);
-router.get('/current', verifySupabaseToken, currentUser);
+router.get('/current', verifyAccessToken, currentUser);
 router.post('/refresh', refreshToken);
 router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', validateResetPassword, resetPassword);
+router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 
 export default router;

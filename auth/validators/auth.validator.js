@@ -25,13 +25,6 @@ export const registerSchema = Joi.object({
   }),
 });
 
-export const validateRegister = (req, res, next) => {
-  const { error } = registerSchema.validate(req.body);
-
-  if (error) return res.status(400).json({ error: error.details[0].message });
-  next();
-};
-
 export const loginSchema = Joi.object({
   email: Joi.string()
     .email({ tlds: { allow: true } })
@@ -45,13 +38,6 @@ export const loginSchema = Joi.object({
     'any.required': 'Password is required',
   }),
 });
-
-export const validateLogin = (req, res, next) => {
-  const { error } = loginSchema.validate(req.body);
-
-  if (error) return res.status(400).json({ error: error.details[0].message });
-  next();
-};
 
 export const resetPasswordSchema = Joi.object({
   access_token: Joi.string().required().messages({
@@ -71,9 +57,12 @@ export const resetPasswordSchema = Joi.object({
     }),
 });
 
-export const validateResetPassword = (req, res, next) => {
-  const { error } = registerSchema.validate(req.body);
+export const validate = schema => (req, res, next) => {
+  const { error } = schema.validate(req.body);
 
-  if (error) return res.status(400).json({ error: error.details[0].message });
+  if (error)
+    return res
+      .status(400)
+      .json({ errors: error.details.map(err => err.message) });
   next();
 };
