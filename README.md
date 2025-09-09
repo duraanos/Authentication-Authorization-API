@@ -28,6 +28,8 @@ A Node.js + Express.js based REST API for user authentication and authorization 
 
 ## 📂 Project Structure
 
+```
+
 src/
 ├── auth/
 │   └── config/
@@ -53,6 +55,8 @@ src/
 │   ├── auth.validator.js      
 │
 └── app.js                
+
+```
 
 
 ## 🛠️ Tech Stack
